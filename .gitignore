@@ -1,7 +1,0 @@
-*.tfvars
-*.log
-*.tfstate
-*.tfstate.*
-.gitignore
-
-.terraform/
