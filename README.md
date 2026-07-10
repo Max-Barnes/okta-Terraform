@@ -14,5 +14,4 @@ export environment variables for okta provider
 
 you need okta to have a terraform api service app with okta.groups.manage, okta.users.manage, okta.apps.manage per your scope
 
-create the terraform role in the service app per your scope, least privileged
-
+create the terraform role in the service app per your scope, least privileged. For the lab initially I gave it org admin. 
