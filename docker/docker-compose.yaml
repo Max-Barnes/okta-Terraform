@@ -1,0 +1,40 @@
+services:
+
+  # basic hello world app that just shows a message about the container/pod. made it to play with AKS but works for this project. 
+  # nothing external can communicate with this app since it is only listening on internal port
+  app:
+    image: maxbarnes/k8s-flask:0.13
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks: 
+      - internal
+
+
+  oauth2-proxy:
+    container_name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    environment: 
+      OAUTH2_PROXY_PROVIDER: "oidc"
+      OAUTH2_PROXY_OIDC_ISSUER_URL: https://${OKTA_ORG_NAME}.okta.com
+      OAUTH2_PROXY_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
+      OAUTH2_PROXY_SCOPE: "openid profile email"
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_UPSTREAMS: "http://app:3000"
+      OAUTH2_PROXY_REDIRECT_URL: "http://localhost:4180/oauth2/callback"
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET} # generate me with openssl rand -base64 32 | head -c 32 | base64
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+    restart: unless-stopped
+    ports:
+      - "4180:4180"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

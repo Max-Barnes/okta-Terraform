@@ -1,5 +1,10 @@
-resource "okta_group" "test-group" {
-    name = "test group"
-    description = "Created via Terraform"
+
+module "app" {
+    source = "./modules/apps"
+    
+    name = "name"
+    type = "yourtype"
+    uri = "http://localhost:4180/oauth2/callback"
+    group = "Dev"
 }
 
